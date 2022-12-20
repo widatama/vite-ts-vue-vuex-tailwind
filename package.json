@@ -2,6 +2,7 @@
   "name": "vite-ts-vue-vuex-tailwind",
   "version": "0.0.0",
   "scripts": {
+    "postinstall": "patch-package",
     "start": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
@@ -10,6 +11,7 @@
     "lint": "eslint . --ext .vue,.js,.cjs,.mjs,.ts,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "patch-package": "^6.5.0",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
     "vuex": "^4.1.0"

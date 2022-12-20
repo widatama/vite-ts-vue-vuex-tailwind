@@ -1,0 +1,70 @@
+diff --git a/node_modules/vite-plugin-pug-transformer/package.json b/node_modules/vite-plugin-pug-transformer/package.json
+index 974634f..d3c429d 100644
+--- a/node_modules/vite-plugin-pug-transformer/package.json
++++ b/node_modules/vite-plugin-pug-transformer/package.json
+@@ -2,7 +2,8 @@
+   "name": "vite-plugin-pug-transformer",
+   "version": "1.0.3",
+   "description": "Vite plugin for supporting pug templates",
+-  "main": "src/index.js",
++  "main": "src/index.cjs",
++  "module": "src/index.js",
+   "scripts": {
+     "test": "uvu tests .test.js$ && eslint ."
+   },
+diff --git a/node_modules/vite-plugin-pug-transformer/src/index.cjs b/node_modules/vite-plugin-pug-transformer/src/index.cjs
+new file mode 100644
+index 0000000..84556a1
+--- /dev/null
++++ b/node_modules/vite-plugin-pug-transformer/src/index.cjs
+@@ -0,0 +1,50 @@
++const path = require('path');
++const colors = require('picocolors');
++const { compileFile } = require('pug');
++
++function getShortName(file, root) {
++  return file.startsWith(root + '/') ? path.posix.relative(root, file) : file;
++}
++
++function transformer({ pugOptions = {}, pugLocals = {} } = {}) {
++  return {
++    name: 'vite-plugin-pug-transformer',
++
++    handleHotUpdate({ file, server }) {
++      if (file.endsWith('.pug')) {
++        server.config.logger.info(
++          colors.green('page reload ') + colors.dim(getShortName(file, server.config.root)),
++          { clear: true, timestamp: true }
++        );
++
++        server.ws.send({
++          type: 'full-reload',
++        });
++
++        return [];
++      }
++    },
++
++    transformIndexHtml: {
++      enforce: 'pre',
++      transform(html, { filename }) {
++        const updatedHtml = html.replace(/<template.*?data-type="pug".*?(\/>|<\/template>)/g, (matchedString) => {
++          const [, rawTemplatePath] = matchedString.match(/data-src=["'](.*?)["']/) || [];
++
++          if (!rawTemplatePath) {
++            throw new Error(`Template path not specified for ${matchedString}`);
++          }
++
++          const entryFileDir = filename.replace(/(.*)\/.*\.html$/, '$1');
++          const templateFilePath = path.join(entryFileDir, rawTemplatePath);
++
++          return compileFile(templateFilePath, pugOptions)(pugLocals);
++        });
++
++        return updatedHtml;
++      },
++    },
++  };
++}
++
++module.exports = transformer;
