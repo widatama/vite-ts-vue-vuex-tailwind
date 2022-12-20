@@ -3,9 +3,16 @@ import { fileURLToPath, URL } from 'node:url';
 
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { createHtmlPlugin } from 'vite-plugin-html';
 
 const rootDir = resolve(__dirname, 'src');
 const outDir = resolve(__dirname, 'dist');
+
+const inject = {
+  data: {
+    appTitle: 'App Title',
+  },
+};
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,7 +25,7 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue()],
+  plugins: [vue(), createHtmlPlugin({ inject })],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
