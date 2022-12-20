@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { createHtmlPlugin } from 'vite-plugin-html';
+import vitePugPlugin from 'vite-plugin-pug-transformer';
 
 const rootDir = resolve(__dirname, 'src');
 const outDir = resolve(__dirname, 'dist');
@@ -25,7 +26,7 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue(), createHtmlPlugin({ inject })],
+  plugins: [vue(), createHtmlPlugin({ inject }), vitePugPlugin()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
