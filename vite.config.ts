@@ -5,8 +5,9 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
-const rootDir = resolve(__dirname, 'src');
 const outDir = resolve(__dirname, 'dist');
+const rootDir = resolve(__dirname, 'src');
+const publicDir = resolve(__dirname, 'public');
 
 const inject = {
   data: {
@@ -25,6 +26,7 @@ export default defineConfig({
       },
     },
   },
+  publicDir,
   plugins: [vue(), createHtmlPlugin({ inject })],
   resolve: {
     alias: {
